@@ -8,7 +8,7 @@ Its a simple wan emaulator that just used the linux netem stack, but puts a web 
 Network Setup
 =============
 
-wanemu, on boot, looks for the modules it needs an installs them, this requires root priveledges. 
+wanemu (on start) looks for the kernel modules it needs an installs them, this requires root priveledges. 
 wanemu will also only work on interfaces with names that start with the name "emu", generally you'll
 do this by createing a bridge across two itnerfaces on your linux box and controlling packets coming 
 thru that bridge, eg:
@@ -34,4 +34,5 @@ Copy the wanemu.js file to your server and run "nodejs wanemu.js 8080" which sta
 TODO
 ====
 
-Decide if i should "find" interfaces based on having a name of emu* or as a command line argument
+Decide if i should "find" interfaces based on having a name of emu* or as a command line argument or perhaps
+both

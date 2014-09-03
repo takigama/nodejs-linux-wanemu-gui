@@ -4,16 +4,15 @@ var exec = require('child_process').exec;
 var fs = require('fs');
 var qs = require('querystring');
 
+var message = "";
+
 
 var bridges = new Array();
 var bridge_settings = new Array();
 var port = 8080;
 
 function webRequest(req, res) {
-	console.log("web request...");
-	//console.log(req);
-	console.log(req.method);
-	console.log(req.url);
+	console.log("web request:" + req.method + " on " + req.url);
 	
 	switch(req.url) {
 	case "/":
@@ -46,8 +45,8 @@ function body(req, res) {
 		var ilkm = bridge_settings[i].split(/[;:]/);
 		//console.log("sets");
 		//console.log(bridge_settings);
-		console.log("ilkm");
-		console.log(ilkm);
+		//console.log("ilkm");
+		//console.log(ilkm);
 		res.write("<td>");
 		res.write("<form method=\"POST\" action=\"/update\"><input type=\"hidden\" name=\"bridge\" value=\""+i.toString()+"\"><table border=\"1\"><tr><th colspan=\"4\">Bridge "+bridges[i]+"</th></tr>");
 		res.write("<tr><td>Speed</td><td><input type=\"text\" name=\"speed\" value=\""+ilkm[1]+"\"> kbps</td><td colspan=\"2\">0 is unlimited</td></tr>");
@@ -65,6 +64,16 @@ function body(req, res) {
 	}
 	res.write("</tr>");
 	res.write("</table>");
+	
+	res.write("<hr><h3>Help</h3><b>Speed</b>: Data rate packets are allowed to pass the interface (uses delay and queueing - classic token bucket filter)<br><b>Latency</b>: How much delay to put onto packets<br>");
+	res.write("<b>Jitter</b>: How much to randomally change the latency by - i.e. total latency is latency +/- a random amount specified by jitter, 10ms delay + 5ms jitter can mean packets are delayed by between 5 and 15ms<br>");
+	res.write("<b>Duplicated Packets</b>: Random duplication of packet data based on this number as a percentage<br>");
+	res.write("<b>Dropped Packets</b>: Percentage of packets that are randomally dropped<br>");
+	res.write("<b>Dropped Packets Distribution</b>: tries to bundle together dropped packets into \"bunches\", this number (as a percentages) defines how bunched up they are<br>");
+	res.write("<b>Corrupted Packets</b>: Packets are randomally corrupted and have a change of being corrupted based on this percentage<br>");
+	res.write("<b>Corrupted Packets Distribution</b>: tries to bundle together corrupted packets into \"bunches\", this number (as a percentages) defines how bunched up they are<br>");
+	res.write("<b>Out-of-order Packets</b>: Packets are randomally delayed to cause out-of-order delivery this number defines the chance of this occuring as a percent<br>");
+	res.write("<b>Out-of-order Packets Distribution</b>: tries to bundle together out-of-order packets into \"bunches\", this number (as a percentages) defines how bunched up they are<br>");
 }
 
 function bottom(req, res) {
@@ -73,6 +82,10 @@ function bottom(req, res) {
 
 function topHead(req, res) {
 	res.write("<html><head></head><style type=\"text/css\">body {background-color:#999;}p {color:blue;}</style><body><h2>Bridge WANEMU</h2>");
+	if(message != "") {
+		res.write("<hr><table border=\"0\" width=\"100%\"><tr width=\"100%\"><td width=\"100%\" bgcolor=\"#eeeeee\"><font color=\"#FF3333\">"+message+"</font></td></tr></table>");
+		message = "";
+	}
 	
 }
 
@@ -98,8 +111,8 @@ function doPost(req, res) {
 
 function setParams(postdata, req, res) {
 	
-	console.log("postdata");
-	console.log(postdata);
+	//console.log("postdata");
+	//console.log(postdata);
 	
 	var brnum = postdata["bridge"];
 	var newline = "speed:"+postdata["speed"]+";latency:"+postdata["latency"]+";jitter:"+postdata["jitter"]+";dupe:"+postdata["dupe"]+";dropped:"+postdata["dropped"];
@@ -108,27 +121,28 @@ function setParams(postdata, req, res) {
 	bridge_settings[brnum] = newline;
 	var brname = bridges[brnum];
 
-	console.log("new dataline: "+newline);
+	// console.log("new dataline: "+newline);
 	
 	var speedline = "";
 	var netemline = "";
 	
-	netemline = "tc qdisc del dev "+brname+" root;tc qdisc add dev "+brname+" root handle 1:0 netem";
+	netemline = "tc qdisc del dev "+brname+" root;tc qdisc add dev "+brname+" root netem";
 	if(postdata["latency"] != 0) netemline += " delay "+postdata["latency"]+"ms";
-	if(postdata["jitter"] != 0 && postdata["latency"] != 0) netemline += " "+postdata["latency"]+"ms";
+	if(postdata["jitter"] != 0 && postdata["latency"] != 0) netemline += " "+postdata["jitter"]+"ms";
 	if(postdata["dupe"] != 0) netemline += " duplicate "+postdata["dupe"]+"%";
 	if(postdata["dropped"] != 0) netemline += " loss "+postdata["dropped"]+"%";
 	if(postdata["dropped"] != 0 && postdata["dropdist"] != 0) netemline += " "+postdata["dropdist"]+"%";
 	if(postdata["corrupt"] != 0) netemline += " corrupt "+postdata["corrupt"]+"%";
 	if(postdata["outoforder"] != 0) netemline += " reorder "+postdata["outoforder"]+"%";
 	if(postdata["outoforder"] != 0 && postdata["ooodist"] != 0) netemline += " "+postdata["ooodist"]+"%";
+	if(postdata["speed"] != 0) netemline += " rate "+postdata["speed"]+"kbit";
 	
 	
 	
-	if(postdata["speed"] != 0) {
-		speedline = "tc qdisc add dev "+brname+	" parent 1:1 handle 10: tbf rate "+postdata["speed"]+"kbit buffer 1600 limit 3000";
-		netemline += ";"+speedline;
-	}
+	//if(postdata["speed"] != 0) {
+		//speedline = "tc qdisc add dev "+brname+	" parent 1:1 handle 10: tbf rate "+postdata["speed"]+"kbit buffer 1600 limit 3000";
+		//netemline += ";"+speedline;
+	//}
 	
 	
 	var child = exec(netemline, function(error, stdout, stderr) {
@@ -136,16 +150,19 @@ function setParams(postdata, req, res) {
 	    //console.log('stderr: ' + stderr);
 	    if (error !== null) {
 	    	console.log("applied netem bits failed: "+error);
+	    	console.log("was called as "+netemline);
+	    	message = "<font color=\"#FF3333\">failed to apply... ("+error+")</font>";
 	    } else {
-	    	console.log("applied netembits");
-	    	console.log("stdout: "+stdout);
+	    	message = "<font color=\"#1111FF\">Applied</font>";
+	    	//console.log("applied netembits");
+	    	//console.log("stdout: "+stdout);
 	    }
 	    
 		res.writeHead(302, {"Location": "/"});
 		endRequest(req, res);
 
 	});
-	console.log("netline is "+netemline);
+	//console.log("netline is "+netemline);
 
 }
 
@@ -153,26 +170,6 @@ function endRequest(req, res) {
 	res.end();
 }
 
-
-function setWanSpeed(speed) {
-	
-}
-
-function setDelay(speed, jitter) {
-	
-}
-
-function setCorruption(percent) {
-	
-}
-
-function setDupe(percent) {
-	
-}
-
-function setOutOfOrder(percent) {
-	
-}
 
 
 function startUp() {
@@ -182,7 +179,7 @@ function startUp() {
 	// check for bridges
 	
 	// rather then doing it via a directory read..?
-	var flist = fs.readdirSync("/etc");
+	var flist = fs.readdirSync("/sys/class/net");
 	for(var i=0;i<flist.length;i++) {
 		//console.log("at "+flist[i]);
 		if(flist[i].match(/^emu.*/) !== null) {

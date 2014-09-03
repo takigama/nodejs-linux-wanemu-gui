@@ -68,7 +68,7 @@ function body(req, res) {
 	res.write("<hr><h3>Help</h3><b>Speed</b>: Data rate packets are allowed to pass the interface (uses delay and queueing - classic token bucket filter)<br><b>Latency</b>: How much delay to put onto packets<br>");
 	res.write("<b>Jitter</b>: How much to randomally change the latency by - i.e. total latency is latency +/- a random amount specified by jitter, 10ms delay + 5ms jitter can mean packets are delayed by between 5 and 15ms<br>");
 	res.write("<b>Duplicated Packets</b>: Random duplication of packet data based on this number as a percentage<br>");
-	res.write("<b>Dropped Packets</b>: Percentage of packets that are randomally dropped<br>");
+	res.write("<b>Dropped Packets</b>: Percentage change of packets being dropped<br>");
 	res.write("<b>Dropped Packets Distribution</b>: tries to bundle together dropped packets into \"bunches\", this number (as a percentages) defines how bunched up they are<br>");
 	res.write("<b>Corrupted Packets</b>: Packets are randomally corrupted and have a change of being corrupted based on this percentage<br>");
 	res.write("<b>Corrupted Packets Distribution</b>: tries to bundle together corrupted packets into \"bunches\", this number (as a percentages) defines how bunched up they are<br>");

@@ -16,8 +16,11 @@ should be run via sudo or as root.
 wanemu.js will look for interfaces on startup, either by finding interfaces with a name starting
 with emu or they can be added to the command line directly.
 
-The best way of using it is via proving a bridge over two interfaces and using a third interface
-for the web gui. Such a thing can be done using the brctl commands like so:
+The best way of using wanemu/netem is by putting it inline as a layer 2 device (in my opinion) using
+a bridge setup.
+
+Setting up a bridge in linux is pretty simple, Such a thing can be done using the brctl commands 
+like so:
 
 	# brctl addbr emu-e0e1-0
 	# brctl addif emu-e0e1-0 eth0
@@ -25,6 +28,10 @@ for the web gui. Such a thing can be done using the brctl commands like so:
 
 This would create a bridge named "emu-e0e1-0" and add eth0 and eth1 interfaces to it, dont forget
 to "up" it afterwwards.
+
+	# ifconfig eth0 up
+	# ifconfig eth1 up
+	# ifconfig emu-e0e1-0 up
 
 It is possible to control any interface which netem supports, and to tell wanemu.js which interfaces
 to use, these can be added to the command line after the port number.

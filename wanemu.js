@@ -179,7 +179,8 @@ function startUp() {
 	// check for bridges
 	
 	// rather then doing it via a directory read..?
-	var flist = fs.readdirSync("/sys/class/net");
+	//var flist = fs.readdirSync("/sys/class/net");
+	var flist = fs.readdirSync("/etc");
 	for(var i=0;i<flist.length;i++) {
 		//console.log("at "+flist[i]);
 		if(flist[i].match(/^emu.*/) !== null) {
@@ -188,6 +189,17 @@ function startUp() {
 			
 			bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");
 			
+		}
+	}
+	
+	if(process.argv.length > 3) {
+		for(var i=3; i<process.argv.length; i++) {
+			var intf = process.argv[i];
+			
+			console.log("adding " + intf + " to interface list");
+
+			bridges.push(intf);
+			bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");
 		}
 	}
 	
@@ -211,7 +223,7 @@ function startUp() {
 
 function usage() {
     //console.log("Usage: "+process.argv[1]+" port interface0 [... interfaceN]");
-	console.log("Usage: "+process.argv[1]+" port");
+	console.log("Usage: "+process.argv[1]+" port [interface ...]");
     process.exit(1);
 }
 

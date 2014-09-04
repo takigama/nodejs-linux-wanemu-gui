@@ -2,6 +2,7 @@ NodeJS Linux WAN Emulator Control
 =================================
 
 Its a simple wan emaulator that just used the linux netem stack, but puts a web gui in front of it.
+Wrote it for myself, but figure someone might find it useful.
 
 
 

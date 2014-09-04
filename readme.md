@@ -8,10 +8,15 @@ Its a simple wan emaulator that just used the linux netem stack, but puts a web 
 Network Setup
 =============
 
-wanemu (on start) looks for the kernel modules it needs an installs them, this requires root priveledges. 
-wanemu will also only work on interfaces with names that start with the name "emu", generally you'll
-do this by createing a bridge across two itnerfaces on your linux box and controlling packets coming 
-thru that bridge, eg:
+wanemu.js tries to automagically modprobe the modules required for the netem component of the linux
+QoS/CoS stack, this requires root to do, as does modifying the netem parameters so the wanemu.js 
+should be run via sudo or as root. 
+
+wanemu.js will look for interfaces on startup, either by finding interfaces with a name starting
+with emu or they can be added to the command line directly.
+
+The best way of using it is via proving a bridge over two interfaces and using a third interface
+for the web gui. Such a thing can be done using the brctl commands like so:
 
 	# brctl addbr emu-e0e1-0
 	# brctl addif emu-e0e1-0 eth0
@@ -20,19 +25,34 @@ thru that bridge, eg:
 This would create a bridge named "emu-e0e1-0" and add eth0 and eth1 interfaces to it, dont forget
 to "up" it afterwwards.
 
-You can control multiple bridges at once, so go nuts.
-
-
+It is possible to control any interface which netem supports, and to tell wanemu.js which interfaces
+to use, these can be added to the command line after the port number.
 
 installation
 ============
 
-Copy the wanemu.js file to your server and run "nodejs wanemu.js 8080" which starts the web gui on port 8080.
+Copy the wanemu.js file to your server and run:
 
+	nodejs wanemu.js 8080
+
+which starts the web gui on port 8080.
+
+to add control for additional interfaces, simply append the interface names to the end of the command line, i.e:
+
+	nodejs wanemu.js 8080 eth1 eth2 eth3 dummy0 etc
 
 
 TODO
 ====
+- open to suggestions...?
 
-Decide if i should "find" interfaces based on having a name of emu* or as a command line argument or perhaps
-both
+
+DONE
+====
+- add interfaces via command line
+
+
+BUGS
+====
+
+ - no form validation of any kind....

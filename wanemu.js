@@ -188,6 +188,7 @@ function startUp() {
 			//console.log("at "+flist[i]);
 			if(flist[i].match(/^emu.*/) !== null) {
 				//console.log("----- match");
+				
 				bridges.push(flist[i]);
 				
 				bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");

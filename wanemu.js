@@ -179,24 +179,30 @@ function startUp() {
 	// check for bridges
 	
 	// rather then doing it via a directory read..?
+	
+	var sysfs = "/sys/class/net";
 	//var flist = fs.readdirSync("/sys/class/net");
-	var flist = fs.readdirSync("/etc");
-	for(var i=0;i<flist.length;i++) {
-		//console.log("at "+flist[i]);
-		if(flist[i].match(/^emu.*/) !== null) {
-			//console.log("----- match");
-			bridges.push(flist[i]);
-			
-			bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");
-			
+	if(fs.existsSync(sysfs)) {
+		var flist = fs.readdirSync("/etc");
+		for(var i=0;i<flist.length;i++) {
+			//console.log("at "+flist[i]);
+			if(flist[i].match(/^emu.*/) !== null) {
+				//console.log("----- match");
+				bridges.push(flist[i]);
+				
+				bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");
+				
+			}
 		}
+	} else {
+		console.log("No sysfs exists, checming for interfaces added to the command line");
 	}
 	
 	if(process.argv.length > 3) {
 		for(var i=3; i<process.argv.length; i++) {
 			var intf = process.argv[i];
 			
-			console.log("adding " + intf + " to interface list");
+			console.log("adding " + intf + " to interface list from command line");
 
 			bridges.push(intf);
 			bridge_settings.push("speed:0;latency:0;jitter:0;dupe:0;dropped:0;dropdist:0;corrupt:0;outoforder:0;ooodist:0");

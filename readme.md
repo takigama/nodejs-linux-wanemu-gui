@@ -73,6 +73,9 @@ by default, but if you know openwrt, this is easy enough to extend.
 To modify the startup for wanemu to also detect more interfaces, have a look at /opt/wanemu/startwanemu.sh
 and it should be reasonably obvious what you need to do there.
 
+Lastly, the VM is a default openwrt/lede image with some extra packages and my wanemu nodejs code. As such
+it defaults to having no password, and ssh is running!
+
 
 TODO
 ====

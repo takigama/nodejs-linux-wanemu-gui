@@ -56,7 +56,7 @@ OPENWRT/LEDE VM
 There is an openwrt/lede based vm here will all you need to get started - it was written for eve-ng so to import
 into there, login to eve-ng and run the following:
 
-	wget ...
+	wget https://github.com/takigama/nodejs-linux-wanemu-gui/raw/master/lede-based-vm.qcow2.gz
 	mkdir -p /opt/unetlab/addons/qemu/linux-wanemu-gui
 	gunzip -c lede-based-vm.qcow2.gz sataa.qcow2
 	

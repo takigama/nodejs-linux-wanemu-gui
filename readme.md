@@ -60,6 +60,7 @@ into there, ssh to eve-ng and run the following:
 	wget https://github.com/takigama/nodejs-linux-wanemu-gui/raw/master/lede-based-vm.qcow2.gz
 	mkdir -p /opt/unetlab/addons/qemu/linux-wanemu-gui
 	gunzip -c lede-based-vm.qcow2.gz > /opt/unetlab/addons/qemu/linux-wanemu-gui/sataa.qcow2
+	/opt/unetlab/wrappers/unl_wrapper -a fixpermissions
 	
 And your done.. eve-ng will default to 1 ethernet interface, but you want more (start with 3 and go up by
 increments of 2). As this is a web gui, you want to create the first interface on a cloud network. Assuming

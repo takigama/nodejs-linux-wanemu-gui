@@ -50,6 +50,29 @@ to add control for additional interfaces, simply append the interface names to t
 	nodejs wanemu.js 8080 eth1 eth2 eth3 dummy0 etc
 
 
+OPENWRT/LEDE VM
+===============
+
+There is an openwrt/lede based vm here will all you need to get started - it was written for eve-ng so to import
+into there, login to eve-ng and run the following:
+
+	wget ...
+	mkdir -p /opt/unetlab/addons/qemu/linux-wanemu-gui
+	gunzip -c lede-based-vm.qcow2.gz sataa.qcow2
+	
+And your done.. eve-ng will default to 1 ethernet interface, but you want more (start with 3 and go up by
+increments of 2). As this is a web gui, you want to create the first interface on a cloud network. Assuming
+dhcp is enabled, tthe vm will get an ip address and you can browse to http://its_ip_address/ to pull up 
+the wanem gui. You can also browse to http://its_ip_address:8080 to get to the openwrt/lede interface
+
+The interfaces are configured such that eth0 (first interface) is its web gui interface and every other
+two interfaces are in a bridge (eth1, eth2 = bridge 1, eth3, eth4 = bridge 2 and so on). There are 4 bridges
+by default, but if you know openwrt, this is easy enough to extend. 
+
+To modify the startup for wanemu to also detect more interfaces, have a look at /opt/wanemu/startwanemu.sh
+and it should be reasonably obvious what you need to do there.
+
+
 TODO
 ====
 - open to suggestions...?

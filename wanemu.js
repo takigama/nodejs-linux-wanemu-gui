@@ -216,7 +216,7 @@ function startUp() {
 	}
 	
 	
-	var child = exec("/sbin/modprobe -a sch_netem sch_tbf", function(error, stdout, stderr) {
+	var child = exec("modprobe sch_netem sch_tbf", function(error, stdout, stderr) {
 	    //console.log('stdout: ' + stdout);
 	    //console.log('stderr: ' + stderr);
 	    if (error !== null) {

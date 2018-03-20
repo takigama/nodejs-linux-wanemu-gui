@@ -50,8 +50,8 @@ to add control for additional interfaces, simply append the interface names to t
 	nodejs wanemu.js 8080 eth1 eth2 eth3 dummy0 etc
 
 
-OPENWRT/LEDE VM
-===============
+OPENWRT/LEDE VM - EVE-NG
+========================
 
 There is an openwrt/lede based vm here will all you need to get started - it was written for eve-ng so to import
 into there, ssh to eve-ng and run the following:
